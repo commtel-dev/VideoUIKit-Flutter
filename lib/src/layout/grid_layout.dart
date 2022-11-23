@@ -89,17 +89,17 @@ class _GridLayoutState extends State<GridLayout> {
   Widget _viewGrid() {
     final views = _getRenderViews();
     if (views.isEmpty) {
-      return Expanded(
-        child: Container(
-          color: Colors.white,
+      return
+        Container(
+          color: Colors.black,
           child: Center(
             child: Text(
-              'Waiting for the host to join',
-              style: TextStyle(color: Colors.black),
+              'Waiting for the system to join...',
+              style: TextStyle(color: Colors.white),
             ),
           ),
-        ),
-      );
+        )
+      ;
     } else if (views.length == 1) {
       return Container(
         child: Column(
@@ -113,7 +113,7 @@ class _GridLayoutState extends State<GridLayout> {
           _expandedVideoRow([views[0]]),
           _expandedVideoRow([views[1]])
         ],
-      ));
+      ),);
     } else if (views.length > 2 && views.length % 2 == 0) {
       return Container(
         child: Column(
