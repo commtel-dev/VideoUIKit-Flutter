@@ -104,8 +104,8 @@ class AgoraChannelData {
   final bool isActiveSpeakerDisabled;
 
   AgoraChannelData({
-    this.channelProfileType = ChannelProfileType.channelProfileCommunication,
-    this.clientRoleType = ClientRoleType.clientRoleBroadcaster,
+    this.channelProfileType = ChannelProfileType.channelProfileLiveBroadcasting,
+    this.clientRoleType = ClientRoleType.clientRoleAudience,
     this.videoEncoderConfiguration,
     this.setCameraAutoFocusFaceModeEnabled = false,
     this.enableDualStreamMode = false,
