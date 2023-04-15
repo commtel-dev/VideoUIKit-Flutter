@@ -6,7 +6,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -49,6 +49,7 @@ class _MyAppState extends State<MyApp> {
               ),
               AgoraVideoButtons(
                 client: client,
+                addScreenSharing: false, // Add this to enable screen sharing
               ),
             ],
           ),

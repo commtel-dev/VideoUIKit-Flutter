@@ -1,4 +1,25 @@
-# 1.1.2
+## 1.3.1
+
+- BUG FIX: No longer shows cloud recording by default. Need to enable it with `cloudRecordingEnabled: true`
+
+## 1.3.0
+
+- Added Cloud Recording. Follow the [Guide](https://github.com/AgoraIO-Community/VideoUIKit-Flutter/wiki/Examples#cloud-recording)
+
+## 1.2.1
+
+- Fixes requestPort bug when joining from separate screen
+- Fixes post call exception when going back to previous screen
+
+
+## 1.2.0
+
+- Added screen sharing for Android/iOS
+- Added layout for one to one video calling
+- Fixes issue [#122](https://github.com/AgoraIO-Community/VideoUIKit-Flutter/issues/122)
+
+
+## 1.1.2
 
 - Fixes issue [#115](https://github.com/AgoraIO-Community/VideoUIKit-Flutter/issues/115)
 - Fixes view of remote user with a disabled video

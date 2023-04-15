@@ -1,8 +1,10 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:agora_uikit/controllers/rtc_buttons.dart';
+import 'package:agora_uikit/models/agora_settings.dart';
 import 'package:agora_uikit/src/layout/floating_layout.dart';
 import 'package:agora_uikit/src/layout/grid_layout.dart';
+import 'package:agora_uikit/src/layout/one_to_one_layout.dart';
 import 'package:agora_uikit/src/layout/widgets/disabled_video_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -61,41 +63,71 @@ class AgoraVideoViewer extends StatefulWidget {
 class _AgoraVideoViewerState extends State<AgoraVideoViewer> {
   @override
   void initState() {
-    if (widget.client.isInitialized) {
-      widget.client.sessionController
-          .updateLayoutType(updatedLayout: widget.layoutType);
-    }
+    widget.client.sessionController
+        .updateLayoutType(updatedLayout: widget.layoutType);
     super.initState();
+  }
+
+  Widget _returnLayoutClass({required Layout layout}) {
+    switch (layout) {
+      case Layout.floating:
+        return FloatingLayout(
+          client: widget.client,
+          disabledVideoWidget: widget.disabledVideoWidget,
+          floatingLayoutContainerHeight: widget.floatingLayoutContainerHeight,
+          floatingLayoutContainerWidth: widget.floatingLayoutContainerWidth,
+          floatingLayoutMainViewPadding: widget.floatingLayoutMainViewPadding,
+          floatingLayoutSubViewPadding: widget.floatingLayoutSubViewPadding,
+          showAVState: widget.showAVState,
+          enableHostControl: widget.enableHostControls,
+          showNumberOfUsers: widget.showNumberOfUsers,
+          renderModeType: widget.renderModeType,
+        );
+      case Layout.grid:
+        return GridLayout(
+          client: widget.client,
+          showNumberOfUsers: widget.showNumberOfUsers,
+          disabledVideoWidget: widget.disabledVideoWidget,
+          renderModeType: widget.renderModeType,
+        );
+      case Layout.oneToOne:
+        return OneToOneLayout(
+          client: widget.client,
+          disabledVideoWidget: widget.disabledVideoWidget,
+          renderModeType: widget.renderModeType,
+        );
+      default:
+        return FloatingLayout(
+          client: widget.client,
+          disabledVideoWidget: widget.disabledVideoWidget,
+          floatingLayoutContainerHeight: widget.floatingLayoutContainerHeight,
+          floatingLayoutContainerWidth: widget.floatingLayoutContainerWidth,
+          floatingLayoutMainViewPadding: widget.floatingLayoutMainViewPadding,
+          floatingLayoutSubViewPadding: widget.floatingLayoutSubViewPadding,
+          showAVState: widget.showAVState,
+          enableHostControl: widget.enableHostControls,
+          showNumberOfUsers: widget.showNumberOfUsers,
+          renderModeType: widget.renderModeType,
+        );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      child: widget.layoutType == Layout.floating
-          ? FloatingLayout(
-              client: widget.client,
-              disabledVideoWidget: widget.disabledVideoWidget,
-              floatingLayoutContainerHeight:
-                  widget.floatingLayoutContainerHeight,
-              floatingLayoutContainerWidth: widget.floatingLayoutContainerWidth,
-              floatingLayoutMainViewPadding:
-                  widget.floatingLayoutMainViewPadding,
-              floatingLayoutSubViewPadding: widget.floatingLayoutSubViewPadding,
-              showAVState: widget.showAVState,
-              enableHostControl: widget.enableHostControls,
-              showNumberOfUsers: widget.showNumberOfUsers,
-              renderModeType: widget.renderModeType,
-            )
-          : GridLayout(
-              client: widget.client,
-              showNumberOfUsers: widget.showNumberOfUsers,
-              disabledVideoWidget: widget.disabledVideoWidget,
-              renderModeType: widget.renderModeType,
-            ),
-      onTap: () {
-        toggleVisible(
-          sessionController: widget.client.sessionController,
+    return ValueListenableBuilder(
+      valueListenable: widget.client.sessionController,
+      builder: (BuildContext context, AgoraSettings value, Widget? child) {
+        if (!widget.client.isInitialized) {
+          return Center(child: CircularProgressIndicator());
+        }
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          child: _returnLayoutClass(layout: value.layoutType),
+          onTap: () {
+            toggleVisible(
+              value: value,
+            );
+          },
         );
       },
     );

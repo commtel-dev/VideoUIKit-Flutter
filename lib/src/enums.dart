@@ -1,6 +1,13 @@
-enum Layout { grid, floating }
+enum Layout { grid, floating, oneToOne }
 
-enum BuiltInButtons { callEnd, switchCamera, toggleCamera, toggleMic }
+enum BuiltInButtons {
+  callEnd,
+  switchCamera,
+  toggleCamera,
+  toggleMic,
+  screenSharing,
+  cloudRecording
+}
 
 enum MicState { muted, unmuted }
 

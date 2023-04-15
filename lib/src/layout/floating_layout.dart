@@ -1,6 +1,7 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:agora_uikit/controllers/rtc_buttons.dart';
+import 'package:agora_uikit/models/agora_settings.dart';
 import 'package:agora_uikit/src/layout/widgets/disabled_video_widget.dart';
 import 'package:agora_uikit/src/layout/widgets/host_controls.dart';
 import 'package:agora_uikit/src/layout/widgets/number_of_users.dart';
@@ -62,14 +63,24 @@ class FloatingLayout extends StatefulWidget {
 
 class _FloatingLayoutState extends State<FloatingLayout> {
   Widget _getLocalViews() {
-    return AgoraVideoView(
-      controller: VideoViewController(
-        rtcEngine: widget.client.sessionController.value.engine!,
-        canvas: VideoCanvas(uid: 0, renderMode: widget.renderModeType),
-        useFlutterTexture: widget.useFlutterTexture!,
-        useAndroidSurfaceView: widget.useAndroidSurfaceView!,
-      ),
-    );
+    return widget.client.sessionController.value.isScreenShared
+        ? AgoraVideoView(
+            controller: VideoViewController(
+              rtcEngine: widget.client.sessionController.value.engine!,
+              canvas: const VideoCanvas(
+                uid: 0,
+                sourceType: VideoSourceType.videoSourceScreen,
+              ),
+            ),
+          )
+        : AgoraVideoView(
+            controller: VideoViewController(
+              rtcEngine: widget.client.sessionController.value.engine!,
+              canvas: VideoCanvas(uid: 0, renderMode: widget.renderModeType),
+              useFlutterTexture: widget.useFlutterTexture!,
+              useAndroidSurfaceView: widget.useAndroidSurfaceView!,
+            ),
+          );
   }
 
   Widget _getRemoteViews(int uid) {
@@ -134,10 +145,15 @@ class _FloatingLayoutState extends State<FloatingLayout> {
                                                   ),
                                                 ),
                                                 !widget
-                                                        .client
-                                                        .sessionController
-                                                        .value
-                                                        .isLocalVideoDisabled
+                                                            .client
+                                                            .sessionController
+                                                            .value
+                                                            .isLocalVideoDisabled &&
+                                                        !widget
+                                                            .client
+                                                            .sessionController
+                                                            .value
+                                                            .isScreenShared
                                                     ? Column(
                                                         children: [
                                                           _videoView(
@@ -254,9 +270,8 @@ class _FloatingLayoutState extends State<FloatingLayout> {
                                                           alignment: Alignment
                                                               .topRight,
                                                           child:
-                                                              widget.enableHostControl ==
-                                                                          null ||
-                                                                      false
+                                                              widget.enableHostControl !=
+                                                                      true
                                                                   ? Container()
                                                                   : HostControls(
                                                                       client: widget
@@ -370,9 +385,8 @@ class _FloatingLayoutState extends State<FloatingLayout> {
                                                           alignment: Alignment
                                                               .topRight,
                                                           child:
-                                                              widget.enableHostControl ==
-                                                                          null ||
-                                                                      false
+                                                              widget.enableHostControl !=
+                                                                      true
                                                                   ? Container()
                                                                   : HostControls(
                                                                       client: widget
@@ -447,7 +461,7 @@ class _FloatingLayoutState extends State<FloatingLayout> {
                           ),
                           Align(
                             alignment: Alignment.topRight,
-                            child: widget.enableHostControl == null || false
+                            child: widget.enableHostControl != true
                                 ? Container()
                                 : HostControls(
                                     client: widget.client,
@@ -476,7 +490,9 @@ class _FloatingLayoutState extends State<FloatingLayout> {
                       child: Container(
                         padding: widget.floatingLayoutMainViewPadding,
                         child: widget.client.sessionController.value
-                                .isLocalVideoDisabled
+                                    .isLocalVideoDisabled &&
+                                !widget.client.sessionController.value
+                                    .isScreenShared
                             ? widget.disabledVideoWidget
                             : Stack(
                                 children: [
@@ -491,7 +507,9 @@ class _FloatingLayoutState extends State<FloatingLayout> {
                                   ),
                                   Column(
                                     children: [
-                                      _videoView(_getLocalViews()),
+                                      _videoView(
+                                        _getLocalViews(),
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -502,7 +520,8 @@ class _FloatingLayoutState extends State<FloatingLayout> {
           )
         : widget.client.sessionController.value.clientRoleType ==
                 ClientRoleType.clientRoleBroadcaster
-            ? widget.client.sessionController.value.isLocalVideoDisabled
+            ? widget.client.sessionController.value.isLocalVideoDisabled &&
+                    !widget.client.sessionController.value.isScreenShared
                 ? Column(
                     children: [
                       Expanded(child: widget.disabledVideoWidget),
@@ -534,7 +553,7 @@ class _FloatingLayoutState extends State<FloatingLayout> {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: widget.client.sessionController,
-      builder: (context, counter, widgetx) {
+      builder: (context, AgoraSettings agoraSettings, widgetx) {
         return Center(
           child: Stack(
             children: [

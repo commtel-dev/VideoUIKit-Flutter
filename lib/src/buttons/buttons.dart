@@ -1,5 +1,6 @@
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:agora_uikit/controllers/rtc_buttons.dart';
+import 'package:agora_uikit/src/buttons/cloud_recording_button.dart';
 import 'package:flutter/material.dart';
 
 /// A UI class to style how the buttons look. Use this class to add, remove or customize the buttons in your live video calling application.
@@ -36,8 +37,19 @@ class AgoraVideoButtons extends StatefulWidget {
   /// Use this to style the disabled video button as per your liking while still keeping the default functionality.
   final Widget? disableVideoButtonChild;
 
+  final Widget? screenSharingButtonWidget;
+
+  final Widget? cloudRecordingButtonWidget;
+
   /// Agora VideoUIKit takes care of leaving the channel and destroying the engine. But if you want to add any other functionality to the disconnect button, use this.
   final Function()? onDisconnect;
+
+  /// Adds Screen Sharing button to the layout and let's user share their screen using the same. Currently only on Android and iOS. The deafult value is set to `false`. So, if you want to add screen sharing set [addScreenSharing] to `true`.
+  ///
+  /// Note: This feature is currently in beta
+  final bool? addScreenSharing;
+
+  final bool? cloudRecordingEnabled;
 
   const AgoraVideoButtons({
     Key? key,
@@ -52,7 +64,11 @@ class AgoraVideoButtons extends StatefulWidget {
     this.muteButtonChild,
     this.switchCameraButtonChild,
     this.disableVideoButtonChild,
+    this.screenSharingButtonWidget,
+    this.cloudRecordingButtonWidget,
     this.onDisconnect,
+    this.addScreenSharing = false,
+    this.cloudRecordingEnabled = false,
   }) : super(key: key);
 
   @override
@@ -71,7 +87,7 @@ class _AgoraVideoButtonsState extends State<AgoraVideoButtons> {
         if (mounted) {
           setState(() {
             toggleVisible(
-              sessionController: widget.client.sessionController,
+              value: widget.client.sessionController.value,
             );
           });
         }
@@ -83,6 +99,10 @@ class _AgoraVideoButtonsState extends State<AgoraVideoButtons> {
       BuiltInButtons.callEnd: _disconnectCallButton(),
       BuiltInButtons.switchCamera: _switchCameraButton(),
       BuiltInButtons.toggleCamera: _disableVideoButton(),
+      BuiltInButtons.screenSharing: _screenSharingButton(),
+      BuiltInButtons.cloudRecording: CloudRecordingButton(
+        client: widget.client,
+      ),
     };
 
     if (widget.enabledButtons != null) {
@@ -120,11 +140,19 @@ class _AgoraVideoButtonsState extends State<AgoraVideoButtons> {
                           _disconnectCallButton(),
                           _switchCameraButton(),
                           _disableVideoButton(),
+                          widget.cloudRecordingEnabled!
+                              ? CloudRecordingButton(
+                                  client: widget.client,
+                                )
+                              : Container(),
+                          widget.addScreenSharing!
+                              ? _screenSharingButton()
+                              : Container(),
                           if (widget.extraButtons != null)
                             for (var i = 0;
                                 i < widget.extraButtons!.length;
                                 i++)
-                              widget.extraButtons![i]
+                              widget.extraButtons![i],
                         ],
                       )
                     : Row(
@@ -141,6 +169,14 @@ class _AgoraVideoButtonsState extends State<AgoraVideoButtons> {
                           if (widget.enabledButtons!
                               .contains(BuiltInButtons.toggleCamera))
                             _disableVideoButton(),
+                          if (widget.enabledButtons!
+                              .contains(BuiltInButtons.cloudRecording))
+                            CloudRecordingButton(
+                              client: widget.client,
+                            ),
+                          if (widget.enabledButtons!
+                              .contains(BuiltInButtons.screenSharing))
+                            _screenSharingButton(),
                           if (widget.extraButtons != null)
                             for (var i = 0;
                                 i < widget.extraButtons!.length;
@@ -154,6 +190,34 @@ class _AgoraVideoButtonsState extends State<AgoraVideoButtons> {
         ],
       ),
     );
+  }
+
+  Widget _screenSharingButton() {
+    return widget.screenSharingButtonWidget != null
+        ? RawMaterialButton(
+            onPressed: () =>
+                shareScreen(sessionController: widget.client.sessionController),
+            child: widget.screenSharingButtonWidget,
+          )
+        : RawMaterialButton(
+            onPressed: () =>
+                shareScreen(sessionController: widget.client.sessionController),
+            child: Icon(
+              widget.client.sessionController.value.turnOnScreenSharing
+                  ? Icons.stop_screen_share_outlined
+                  : Icons.screen_share_outlined,
+              color: widget.client.sessionController.value.turnOnScreenSharing
+                  ? Colors.white
+                  : Colors.blueAccent,
+              size: 20.0,
+            ),
+            shape: CircleBorder(),
+            elevation: 2.0,
+            fillColor: widget.client.sessionController.value.turnOnScreenSharing
+                ? Colors.blueAccent
+                : Colors.white,
+            padding: const EdgeInsets.all(12.0),
+          );
   }
 
   Widget _muteMicButton() {
@@ -259,14 +323,12 @@ class _AgoraVideoButtonsState extends State<AgoraVideoButtons> {
 
   /// Default functionality of disconnect button is such that it pops the view and navigates the user to the previous screen.
   Future<void> _onCallEnd(BuildContext context) async {
-    await endCall(
-      sessionController: widget.client.sessionController,
-    );
     if (widget.onDisconnect != null) {
       await widget.onDisconnect!();
     } else {
       Navigator.pop(context);
     }
+    await widget.client.release();
   }
 
   @override
