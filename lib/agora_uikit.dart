@@ -16,10 +16,10 @@ export 'package:agora_rtc_engine/agora_rtc_engine.dart'
         RemoteAudioState,
         RemoteAudioStateReason,
         LocalAudioStreamState,
-        LocalAudioStreamError,
+        LocalAudioStreamReason,
         AudioVolumeInfo,
         LocalVideoStreamState,
-        LocalVideoStreamError,
+        LocalVideoStreamReason,
         AreaCode,
         UserInfo,
         ConnectionStateType,
@@ -34,33 +34,43 @@ export 'package:agora_rtc_engine/agora_rtc_engine.dart'
         AudioMixingStateType,
         AudioMixingReasonType,
         RtmpStreamPublishState,
-        RtmpStreamPublishErrorType,
+        RtmpStreamPublishReason,
         InjectStreamStatus,
         ChannelMediaRelayState,
         ChannelMediaRelayError,
-        ChannelMediaRelayEvent,
         StreamPublishState,
         StreamSubscribeState,
         RtmpStreamingEvent,
         UploadErrorReason;
 export 'package:agora_rtm/agora_rtm.dart'
     show
-        AgoraRtmMessage,
-        AgoraRtmMember,
-        AgoraRtmChannelAttribute,
         AgoraRtmChannelException,
         AgoraRtmClientException,
-        AgoraRtmLocalInvitation,
-        AgoraRtmRemoteInvitation;
+        RtmMessage,
+        RtmAttribute,
+        RtmChannelAttribute,
+        RtmChannelMember,
+        RtmChannelMemberCount,
+        RtmAreaCode,
+        RtmCloudProxyType,
+        RtmConnectionChangeReason,
+        RtmConnectionState,
+        RtmLocalInvitationState,
+        RtmServiceContext,
+        RtmLogFilter,
+        RtmMessageType,
+        RtmPeerOnlineState,
+        RtmPeerSubscriptionOption,
+        RtmRemoteInvitationState;
 export 'package:permission_handler/permission_handler.dart';
 
 export 'models/agora_channel_data.dart' show AgoraChannelData;
 export 'models/agora_connection_data.dart' show AgoraConnectionData;
 export 'models/agora_rtc_event_handlers.dart' show AgoraRtcEventHandlers;
-export 'models/agora_rtm_client_event_handler.dart'
-    show AgoraRtmClientEventHandler;
 export 'models/agora_rtm_channel_event_handler.dart'
     show AgoraRtmChannelEventHandler;
+export 'models/agora_rtm_client_event_handler.dart'
+    show AgoraRtmClientEventHandler;
 export 'src/agora_client.dart' show AgoraClient;
 export 'src/buttons/buttons.dart' show AgoraVideoButtons;
 export 'src/enums.dart';

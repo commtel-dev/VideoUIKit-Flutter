@@ -1,3 +1,34 @@
+## 1.3.8
+- Update types from agora_rtc_engine 6.3.0
+
+## 1.3.7
+- Fixes active speaker bug when user overrides with manual pin
+- Updates permission_handler to v11.0.0
+
+## 1.3.6
+
+- Fixes error [[#151](https://github.com/AgoraIO-Community/VideoUIKit-Flutter/issues/151)
+- Updating RTC to v6.2.2
+
+## 1.3.5
+
+- Allow for wider range of `http` packages
+
+## 1.3.4
+
+- Fixes error [#137](https://github.com/AgoraIO-Community/VideoUIKit-Flutter/issues/137)
+- Setting RTC to v6.1.0 and RTM to v1.5.0
+
+## 1.3.3
+
+- BREAKING CHANGE: VideoSourceType for `onFirstLocalVideoFrame` callback
+
+## 1.3.2
+
+- Added callback for cloud recording destination URL
+- Added loading state for cloud recording button
+- Update to use new cloud recording schema
+
 ## 1.3.1
 
 - BUG FIX: No longer shows cloud recording by default. Need to enable it with `cloudRecordingEnabled: true`

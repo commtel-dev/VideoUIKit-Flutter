@@ -140,21 +140,20 @@ class AgoraRtcEventHandlers {
   /// Occurs when the first local video frame is displayed on the local video view.
   /// The SDK triggers this callback when the first local video frame is displayed on the local video view.
   ///
-  /// * [source] The capture type of the custom video source. See VideoSourceType .
-  /// * [connection] The connection information. See RtcConnection .
+  /// * [source] The type of the video source. See VideoSourceType .
   /// * [width] The width (px) of the first local video frame.
   /// * [height] The height (px) of the first local video frame.
-  /// * [elapsed] Time elapsed (ms) from the local user calling joinChannel [2/2] until the SDK triggers this callback. If you call startPreview before calling joinChannel [2/2], then this parameter is the time elapsed from calling the startPreview method until the SDK triggers this callback.
+  /// * [elapsed] Time elapsed (ms) from the local user calling joinChannel until the SDK triggers this callback. If you call startPreview before calling joinChannel, then this parameter is the time elapsed from calling the startPreview method until the SDK triggers this callback.
   final void Function(
-          RtcConnection connection, int width, int height, int elapsed)?
+          VideoSourceType source, int width, int height, int elapsed)?
       onFirstLocalVideoFrame;
 
   /// Occurs when the first video frame is published.
-  /// The SDK triggers this callback under one of the following circumstances:The local client enables the video module and calls joinChannel [2/2] successfully.The local client calls muteLocalVideoStream (true) and muteLocalVideoStream(false) in sequence.The local client calls disableVideo and enableVideo in sequence.
+  /// The SDK triggers this callback under one of the following circumstances: The local client enables the video module and calls joinChannel successfully. The local client calls muteLocalVideoStream (true) and muteLocalVideoStream (false) in sequence. The local client calls disableVideo and enableVideo in sequence.
   ///
   /// * [connection] The connection information. See RtcConnection .
   /// * [elapsed] Time elapsed (ms) from the local user calling joinChannel [2/2] until the SDK triggers this callback.
-  final void Function(RtcConnection connection, int elapsed)?
+  final void Function(VideoSourceType source, int elapsed)?
       onFirstLocalVideoFramePublished;
 
   /// Occurs when the first remote video frame is received and decoded.
@@ -187,7 +186,7 @@ class AgoraRtcEventHandlers {
   /// * [state] The state of the local video, see LocalVideoStreamState .
   /// * [error] The detailed error information, see LocalVideoStreamError .
   final void Function(VideoSourceType source, LocalVideoStreamState state,
-      LocalVideoStreamError error)? onLocalVideoStateChanged;
+      LocalVideoStreamReason error)? onLocalVideoStateChanged;
 
   /// Occurs when the remote video stream state changes.
   /// This callback does not work properly when the number of users (in the communication profile) or hosts (in the live streaming channel) in a channel exceeds 17.
@@ -273,15 +272,6 @@ class AgoraRtcEventHandlers {
   final void Function(RtcConnection connection, int remoteUid, bool enabled)?
       onUserEnableLocalVideo;
 
-  /// Occurs when a method is executed by the SDK.
-  ///
-  ///
-  /// * [err] The error code returned by the SDK when the method call fails. If the SDK returns 0, then the method call is successful.
-  /// * [api] The method executed by the SDK.
-  /// * [result] The result of the method call.
-  final void Function(ErrorCodeType err, String api, String result)?
-      onApiCallExecuted;
-
   /// Reports the statistics of the local audio stream.
   /// The SDK triggers this callback once every two seconds.
   ///
@@ -303,7 +293,7 @@ class AgoraRtcEventHandlers {
   ///
   /// * [connection] The connection information. See RtcConnection .
   /// * [stats] The statistics of the local video stream. See LocalVideoStats .
-  final void Function(RtcConnection connection, LocalVideoStats stats)?
+  final void Function(VideoSourceType source, LocalVideoStats stats)?
       onLocalVideoStats;
 
   /// Reports the statistics of the video stream sent by each remote users.
@@ -340,8 +330,12 @@ class AgoraRtcEventHandlers {
   /// * [vecRectangle] The information of the detected human face. See Rectangle .
   /// * [vecDistance] The distance between the human face and the device screen (cm).
   /// * [numFaces] The number of faces detected. If the value is 0, it means that no human face is detected.
-  final void Function(int imageWidth, int imageHeight, Rectangle vecRectangle,
-      int vecDistance, int numFaces)? onFacePositionChanged;
+  final void Function(
+      int imageWidth,
+      int imageHeight,
+      List<Rectangle> vecRectangle,
+      List<int> vecDistance,
+      int numFaces)? onFacePositionChanged;
 
   /// Occurs when the video stops playing.
   /// Deprecated:Use localVideoStreamStateStopped(0) in the onLocalVideoStateChanged callback instead.The application can use this callback to change the configuration of the view (for example, displaying other pictures in the view) after the video stops playing.
@@ -357,7 +351,7 @@ class AgoraRtcEventHandlers {
 
   /// @nodoc
   final void Function(
-          RhythmPlayerStateType state, RhythmPlayerErrorType errorCode)?
+          RhythmPlayerStateType state, RhythmPlayerReason errorCode)?
       onRhythmPlayerStateChanged;
 
   /// Occurs when the SDK cannot reconnect to Agora's edge server 10 seconds after its connection to the server is interrupted.
@@ -449,7 +443,7 @@ class AgoraRtcEventHandlers {
   /// * [state] The state of the local audio. See localaudiostreamstate .
   /// * [error] Local audio state error codes. See LocalAudioStreamError .
   final void Function(RtcConnection connection, LocalAudioStreamState state,
-      LocalAudioStreamError error)? onLocalAudioStateChanged;
+      LocalAudioStreamReason error)? onLocalAudioStateChanged;
 
   /// Occurs when the remote audio state changes.
   /// When the audio state of a remote user (in a voice/video call channel) or host (in a live streaming channel) changes, the SDK triggers this callback to report the current state of the remote audio stream.This callback does not work properly when the number of users (in the communication profile) or hosts (in the live streaming channel) in a channel exceeds 17.
@@ -524,7 +518,7 @@ class AgoraRtcEventHandlers {
   /// * [state] The current state of the media push. See RtmpStreamPublishState .
   /// * [errCode] The detailed error information for the media push. See RtmpStreamPublishErrorType .
   final void Function(String url, RtmpStreamPublishState state,
-      RtmpStreamPublishErrorType errCode)? onRtmpStreamingStateChanged;
+      RtmpStreamPublishReason errCode)? onRtmpStreamingStateChanged;
 
   /// Reports events during the media push.
   ///
@@ -552,12 +546,6 @@ class AgoraRtcEventHandlers {
   final void Function(
           ChannelMediaRelayState state, ChannelMediaRelayError code)?
       onChannelMediaRelayStateChanged;
-
-  /// Reports events during the media stream relay.
-  ///
-  ///
-  /// * [code] The event code of channel media relay. See ChannelMediaRelayEvent .
-  final void Function(ChannelMediaRelayEvent code)? onChannelMediaRelayEvent;
 
   /// @nodoc
   final void Function(bool isFallbackOrRecover)?
@@ -777,7 +765,6 @@ class AgoraRtcEventHandlers {
     this.onUserEnableVideo,
     this.onUserStateChanged,
     this.onUserEnableLocalVideo,
-    this.onApiCallExecuted,
     this.onLocalAudioStats,
     this.onRemoteAudioStats,
     this.onLocalVideoStats,
@@ -812,7 +799,6 @@ class AgoraRtcEventHandlers {
     this.onTranscodingUpdated,
     this.onAudioRoutingChanged,
     this.onChannelMediaRelayStateChanged,
-    this.onChannelMediaRelayEvent,
     this.onLocalPublishFallbackToAudioOnly,
     this.onRemoteSubscribeFallbackToAudioOnly,
     this.onRemoteAudioTransportStats,

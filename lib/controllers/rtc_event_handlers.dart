@@ -15,9 +15,7 @@ Future<RtcEngineEventHandler> rtcEngineEventHandler(
   SessionController sessionController,
 ) async {
   const String tag = "AgoraVideoUIKit";
-  return RtcEngineEventHandler(onApiCallExecuted: (err, api, result) {
-    agoraEventHandlers.onApiCallExecuted?.call(err, api, result);
-  }, onRejoinChannelSuccess: (connection, elapsed) {
+  return RtcEngineEventHandler(onRejoinChannelSuccess: (connection, elapsed) {
     agoraEventHandlers.onRejoinChannelSuccess?.call(connection, elapsed);
   }, onLocalUserRegistered: (uid, userAccount) {
     agoraEventHandlers.onLocalUserRegistered?.call(uid, userAccount);
@@ -60,12 +58,11 @@ Future<RtcEngineEventHandler> rtcEngineEventHandler(
   }, onFirstLocalAudioFramePublished: (connection, elapsed) {
     agoraEventHandlers.onFirstLocalAudioFramePublished
         ?.call(connection, elapsed);
-  }, onFirstLocalVideoFrame: (connection, width, height, elapsed) {
+  }, onFirstLocalVideoFrame: (source, width, height, elapsed) {
     agoraEventHandlers.onFirstLocalVideoFrame
-        ?.call(connection, width, height, elapsed);
-  }, onFirstLocalVideoFramePublished: (connection, elapsed) {
-    agoraEventHandlers.onFirstLocalVideoFramePublished
-        ?.call(connection, elapsed);
+        ?.call(source, width, height, elapsed);
+  }, onFirstLocalVideoFramePublished: (source, elapsed) {
+    agoraEventHandlers.onFirstLocalVideoFramePublished?.call(source, elapsed);
   }, onFirstRemoteAudioDecoded: (connection, uid, elapsed) {
     agoraEventHandlers.onFirstRemoteAudioDecoded
         ?.call(connection, uid, elapsed);
@@ -119,8 +116,8 @@ Future<RtcEngineEventHandler> rtcEngineEventHandler(
     agoraEventHandlers.onLastmileQuality?.call(quality);
   }, onLastmileProbeResult: (result) {
     agoraEventHandlers.onLastmileProbeResult?.call(result);
-  }, onLocalVideoStats: (connection, stats) {
-    agoraEventHandlers.onLocalVideoStats?.call(connection, stats);
+  }, onLocalVideoStats: (source, stats) {
+    agoraEventHandlers.onLocalVideoStats?.call(source, stats);
   }, onLocalAudioStats: (connection, stats) {
     agoraEventHandlers.onLocalAudioStats?.call(connection, stats);
   }, onRemoteVideoStats: (connection, stats) {
@@ -146,9 +143,8 @@ Future<RtcEngineEventHandler> rtcEngineEventHandler(
       (connection, remoteUid, streamId, code, missed, cached) {
     agoraEventHandlers.onStreamMessageError
         ?.call(connection, remoteUid, streamId, code, missed, cached);
-  }, onChannelMediaRelayEvent: (code) {
-    agoraEventHandlers.onChannelMediaRelayEvent?.call(code);
-  }, onChannelMediaRelayStateChanged: (state, code) {
+  },  
+  onChannelMediaRelayStateChanged: (state, code) {
     agoraEventHandlers.onChannelMediaRelayStateChanged?.call(state, code);
   }, onAudioPublishStateChanged:
       (channel, oldState, newState, elapseSinceLastState) {
@@ -235,7 +231,7 @@ Future<RtcEngineEventHandler> rtcEngineEventHandler(
       if (state == RemoteVideoState.remoteVideoStateStopped) {
         sessionController.updateUserVideo(uid: remoteUid, videoDisabled: true);
       } else if (state == RemoteVideoState.remoteVideoStateDecoding &&
-          (reason == RemoteVideoState.remoteVideoStateStarting ||
+          (state == RemoteVideoState.remoteVideoStateStarting ||
               reason ==
                   RemoteVideoStateReason.remoteVideoStateReasonRemoteUnmuted)) {
         sessionController.updateUserVideo(uid: remoteUid, videoDisabled: false);

@@ -174,6 +174,10 @@ class _FloatingLayoutState extends State<FloatingLayout> {
                                                         onTap: () {
                                                           widget.client
                                                               .sessionController
+                                                              .setActiveSpeakerDisabled(
+                                                                  false);
+                                                          widget.client
+                                                              .sessionController
                                                               .swapUser(
                                                                   index: index);
                                                         },
@@ -238,6 +242,10 @@ class _FloatingLayoutState extends State<FloatingLayout> {
                                                             child:
                                                                 GestureDetector(
                                                               onTap: () {
+                                                                widget.client
+                                                                    .sessionController
+                                                                    .setActiveSpeakerDisabled(
+                                                                        true);
                                                                 widget.client
                                                                     .sessionController
                                                                     .swapUser(
@@ -355,6 +363,10 @@ class _FloatingLayoutState extends State<FloatingLayout> {
                                                               onTap: () {
                                                                 widget.client
                                                                     .sessionController
+                                                                    .setActiveSpeakerDisabled(
+                                                                        true);
+                                                                widget.client
+                                                                    .sessionController
                                                                     .swapUser(
                                                                         index:
                                                                             index);
@@ -439,7 +451,9 @@ class _FloatingLayoutState extends State<FloatingLayout> {
                 ),
               ),
               widget.client.sessionController.value.mainAgoraUser.uid !=
-                      widget.client.sessionController.value.localUid
+                          widget.client.sessionController.value.localUid &&
+                      widget.client.sessionController.value.mainAgoraUser.uid !=
+                          0
                   ? Expanded(
                       child: Stack(
                         children: [
